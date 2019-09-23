@@ -9,8 +9,8 @@ var numY = 6;
 
 var firstMax = 99;
 var firstMin = 11;
-var secondMax = 9;
-var secondMin = 2;
+var secondMax = 99;
+var secondMin = 11;
 var operator = 'X';
 
 function generateRandom(min, max) {
