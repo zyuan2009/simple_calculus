@@ -96,7 +96,7 @@ function generateRandomNode(depth) {
     var queue = [];
     let root = new Node();
     root.depth = 0;
-    root.value = generateRandom(10, 1999);
+    root.value = randomSign() * generateRandom(10, 1999);
     queue.push(root);
     while (queue.length > 0) {
         current = queue[0];
@@ -108,39 +108,27 @@ function generateRandomNode(depth) {
             current.right.depth = current.depth + 1;
             current.left.parent = current;
             current.right.parent = current;
-            current.op = generateRandomSign();
+            current.op = randomOperator();
             switch(current.op) {
                 case '+':
-                    if (current.value < 10) {
-                        current.op = '-';
-                        current.right.value = generateRandom(10, 99);
-                        current.left.value = current.right.value + current.value;
-                    } else {
-                        current.right.value = generateRandom(1, 10);
-                        current.left.value = current.value - current.right.value;
-                    }
+                    current.right.value = randomSign() * generateRandom(1, 99);
+                    current.left.value = current.right.value + current.value;
                     queue.push(current.left);
                     queue.push(current.right);
                     break;
                 case '-':
-                    if (current.value > 100) {
-                        current.op = '+';
-                        current.right.value = generateRandom(1, 100);
-                        current.left.value = current.value - current.right.value;
-                    } else {
-                        current.right.value = generateRandom(1, 10);
-                        current.left.value = current.value + current.right.value;
-                    }
+                    current.right.value = randomSign() * generateRandom(1, 99);
+                    current.left.value = current.value + current.right.value;
                     queue.push(current.left);
                     queue.push(current.right);
                     break;
                 case 'x':
-                    if (current.value < 100) {
+                    if (current.value < 100 && current.value > -100) {
                         current.op = '/';
-                        current.right.value = generateRandom(10, 99);
+                        current.right.value = randomSign() * generateRandom(10, 99);
                         current.left.value = current.value * current.right.value;
                     } else {
-                        current.left.value = generateRandom(10, 69);
+                        current.left.value = randomSign() * generateRandom(10, 69);
                         current.right.value = Math.floor(current.value / current.left.value);
                         if (current.left.value * current.right.value != current.value) {
                             current.op = '+';
@@ -171,9 +159,9 @@ function generateRandomNode(depth) {
                     queue.push(current.right);
                     break;
                 case '/':
-                    if (current.value > 500) {
+                    if (current.value > 500 || current.value < -500) {
                         current.op = 'x';
-                        current.left.value = generateRandom(10, 69);
+                        current.left.value = randomSign() * generateRandom(10, 69);
                         current.right.value = Math.floor(current.value / current.left.value);
                         if (current.left.value * current.right.value != current.value) {
                             current.op = '+';
@@ -200,7 +188,7 @@ function generateRandomNode(depth) {
                             break;
                         }
                     } else {
-                        current.right.value = generateRandom(10, 99);
+                        current.right.value = randomSign() * generateRandom(10, 99);
                         current.left.value = current.value * current.right.value;
                     }
                     queue.push(current.left);
@@ -268,9 +256,9 @@ function permutateEquation(root) {
 function convertNodeToEquation(d, parent_op, left_term){
     if (d.op == null) {
         if (d.value > 0) {
-            return d.value.toString();
+            return d.value;
         } else {
-            return "(" + d.value.toString + ")";
+            return "(" + d.value + ")";
         }
     } else {
         var left_equation = convertNodeToEquation(d.left, d.op, true);
@@ -308,7 +296,23 @@ function generateRandom(min, max) {
     return final_val;        
 }
 
-function generateRandomSign() {
+function sign(val) {
+    if (val >= 0) {
+        return 1;
+    } else {
+        return -1;
+    }
+}
+
+function randomSign() {
+    if (randomBoolean()) {
+        return 1;
+    } else {
+        return -1;
+    }
+}
+
+function randomOperator() {
     var init_val = Math.floor(Math.random() * 4);
     if (init_val == 0) {
         return '+';
@@ -321,7 +325,7 @@ function generateRandomSign() {
     }
 }
 
-function generateBoolean() {
+function randomBoolean() {
     var init_val = Math.floor(Math.random() * 2);
     return init_val >= 1;
 }
@@ -412,7 +416,7 @@ function loadHTML() {
     context.textBaseline = "top";
     var i = 1;
     for (var y = yStart; y < yEnd && y < canvasHeight - 40; y += 120) {
-        var node = generateRandomNode(3);
+        var node = generateRandomNode(2);
         permutateEquation(node);
         console.log(node);
         var text = "[" + i.toString() + "]   " + convertNodeToEquation(node, null, false) + "=";
